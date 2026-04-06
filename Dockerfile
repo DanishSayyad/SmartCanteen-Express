@@ -7,6 +7,7 @@ RUN corepack enable
 
 WORKDIR /app
 
+# ---------------- BUILD ----------------
 FROM base AS build
 
 COPY package.json pnpm-lock.yaml tsconfig.json prisma.config.ts ./
@@ -19,6 +20,7 @@ COPY . .
 RUN pnpm prisma:generate
 RUN pnpm build
 
+# ---------------- RUNTIME ----------------
 FROM node:22-alpine AS runtime
 
 ENV NODE_ENV=production
@@ -30,14 +32,24 @@ RUN corepack enable
 
 WORKDIR /app
 
+# Install netcat for DB readiness check
+RUN apk add --no-cache netcat-openbsd
+
+# Copy required files
 COPY --from=build /app/package.json ./package.json
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/prisma ./prisma
+COPY --from=build /app/prisma.config.ts ./prisma.config.ts
 
+# Add entrypoint
+COPY entrypoint.sh ./entrypoint.sh
+RUN chmod +x ./entrypoint.sh
+
+# Create non-root user
 RUN addgroup -S nodejs && adduser -S smartcanteen -G nodejs
 USER smartcanteen
 
 EXPOSE 8080
 
-CMD ["node", "dist/index.js"]
+CMD ["sh", "./entrypoint.sh"]
