@@ -39,6 +39,10 @@ export const orderInclude = {
   }
 } satisfies Prisma.OrderInclude;
 
+export const menuItemInclude = {
+  canteen: true
+} satisfies Prisma.MenuItemInclude;
+
 export class RoleRepository {
   constructor(private readonly db: DbClient) {}
 
@@ -73,6 +77,19 @@ export class CollegeRepository {
             orders: true
           }
         }
+      }
+    });
+  }
+
+  listActivePublic() {
+    return this.db.college.findMany({
+      where: { isActive: true },
+      orderBy: { name: 'asc' },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        code: true
       }
     });
   }
@@ -202,7 +219,10 @@ export class MenuItemRepository {
   constructor(private readonly db: DbClient) {}
 
   create(data: Prisma.MenuItemCreateInput) {
-    return this.db.menuItem.create({ data });
+    return this.db.menuItem.create({
+      data,
+      include: menuItemInclude
+    });
   }
 
   update(id: string, tenantId: string, data: Prisma.MenuItemUpdateInput) {
@@ -212,14 +232,16 @@ export class MenuItemRepository {
         data
       });
       return tx.menuItem.findFirstOrThrow({
-        where: { id, tenantId }
+        where: { id, tenantId },
+        include: menuItemInclude
       });
     });
   }
 
   findById(id: string, tenantId: string) {
     return this.db.menuItem.findFirst({
-      where: { id, tenantId }
+      where: { id, tenantId },
+      include: menuItemInclude
     });
   }
 
@@ -239,6 +261,7 @@ export class MenuItemRepository {
         ...(canteenId ? { canteenId } : {}),
         isAvailable: true
       },
+      include: menuItemInclude,
       orderBy: [{ category: 'asc' }, { name: 'asc' }]
     });
   }
@@ -249,6 +272,7 @@ export class MenuItemRepository {
         tenantId,
         ...(canteenId ? { canteenId } : {})
       },
+      include: menuItemInclude,
       orderBy: { createdAt: 'desc' }
     });
   }

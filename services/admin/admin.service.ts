@@ -33,6 +33,15 @@ export class AdminService {
     return this.collegeRepository.list();
   }
 
+  async listCollegeCanteens(collegeId: string) {
+    const college = await this.collegeRepository.findById(collegeId);
+    if (!college) {
+      throw new AppError(404, 'College not found');
+    }
+
+    return this.canteenRepository.findByTenant(collegeId);
+  }
+
   async createCollege(input: {
     name: string;
     code: string;

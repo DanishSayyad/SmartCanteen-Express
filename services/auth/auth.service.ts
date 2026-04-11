@@ -21,6 +21,17 @@ const sanitizeUser = (user: {
   studentFacultyId?: string | null;
   yearOfStudy?: number | null;
   role: { code: RoleCode; name?: string | null };
+  managerAssignments?: Array<{
+    canteen: {
+      id: string;
+      tenantId: string;
+      name: string;
+      location: string | null;
+      isActive: boolean;
+      createdAt: Date;
+      updatedAt: Date;
+    };
+  }>;
 }) => ({
   id: user.id,
   tenantId: user.tenantId,
@@ -29,7 +40,8 @@ const sanitizeUser = (user: {
   phone: user.phone,
   studentFacultyId: user.studentFacultyId ?? null,
   yearOfStudy: user.yearOfStudy ?? null,
-  role: user.role.code
+  role: user.role.code,
+  assignedCanteens: user.managerAssignments?.map((assignment) => assignment.canteen) ?? []
 });
 
 export class AuthService {
@@ -55,6 +67,10 @@ export class AuthService {
       refreshToken,
       refreshExpiresAt: new Date(decodedRefresh.exp * 1000)
     };
+  }
+
+  listRegistrationTenants() {
+    return this.collegeRepository.listActivePublic();
   }
 
   async registerCustomer(input: {
@@ -180,7 +196,14 @@ export class AuthService {
 
     await this.refreshTokenRepository.revoke(persistedToken.id);
 
-    const nextSession = this.issueSessionTokens(payload);
+    const sessionPayload: JwtSessionPayload = {
+      sub: payload.sub,
+      tenantId: payload.tenantId,
+      role: payload.role,
+      email: payload.email
+    };
+
+    const nextSession = this.issueSessionTokens(sessionPayload);
     await this.refreshTokenRepository.create({
       tokenHash: createSha256Hash(nextSession.refreshToken),
       expiresAt: nextSession.refreshExpiresAt,

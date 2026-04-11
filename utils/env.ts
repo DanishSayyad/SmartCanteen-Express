@@ -13,6 +13,7 @@ const envSchema = z.object({
   QR_TTL_MINUTES: z.coerce.number().min(15).max(30).default(20),
   ORDER_DELAY_MINUTES: z.coerce.number().min(5).default(20),
   CORS_ORIGIN: z.string().default('http://localhost:3000,http://localhost:5173'),
+  PAYMENT_PROVIDER_MODE: z.enum(['razorpay', 'fake']).default('razorpay'),
   RAZORPAY_KEY_ID: z.string().default('rzp_test_key'),
   RAZORPAY_KEY_SECRET: z.string().default('rzp_test_secret'),
   RAZORPAY_WEBHOOK_SECRET: z.string().default('razorpay-webhook-secret'),

@@ -50,7 +50,7 @@ export class PaymentService {
     const providerOrder = await this.paymentProvider.initiatePayment({
       amountInPaise: order.totalInPaise,
       currency: order.currency,
-      receipt: `order_${order.id}`,
+      receipt: `ord_${order.id.slice(0, 32)}`,
       notes: {
         orderId: order.id,
         tenantId: input.tenantId,

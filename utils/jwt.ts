@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import { randomUUID } from 'crypto';
 import { env } from './env.js';
 import { RoleCode } from '../models/domain.js';
 
@@ -20,10 +21,10 @@ const accessExpiresIn = env.JWT_ACCESS_TTL as jwt.SignOptions['expiresIn'];
 const refreshExpiresIn = env.JWT_REFRESH_TTL as jwt.SignOptions['expiresIn'];
 
 export const signAccessToken = (payload: JwtSessionPayload) =>
-  jwt.sign(payload, env.JWT_ACCESS_SECRET, { expiresIn: accessExpiresIn });
+  jwt.sign(payload, env.JWT_ACCESS_SECRET, { expiresIn: accessExpiresIn, jwtid: randomUUID() });
 
 export const signRefreshToken = (payload: JwtSessionPayload) =>
-  jwt.sign(payload, env.JWT_REFRESH_SECRET, { expiresIn: refreshExpiresIn });
+  jwt.sign(payload, env.JWT_REFRESH_SECRET, { expiresIn: refreshExpiresIn, jwtid: randomUUID() });
 
 export const verifyAccessToken = (token: string) =>
   jwt.verify(token, env.JWT_ACCESS_SECRET) as JwtSessionPayload;

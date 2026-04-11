@@ -15,11 +15,15 @@ export const validateRequest =
       }
 
       if (schemas.params) {
-        req.params = schemas.params.parse(req.params) as Request['params'];
+        const parsedParams = schemas.params.parse(req.params) as any;
+        for (const key in req.params) delete req.params[key];
+        Object.assign(req.params, parsedParams);
       }
 
       if (schemas.query) {
-        req.query = schemas.query.parse(req.query) as Request['query'];
+        const parsedQuery = schemas.query.parse(req.query) as any;
+        for (const key in req.query) delete req.query[key];
+        Object.assign(req.query, parsedQuery);
       }
 
       next();

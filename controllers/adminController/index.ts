@@ -7,6 +7,11 @@ export const listColleges = asyncHandler(async (_req: Request, res: Response) =>
   res.status(200).json({ success: true, data: colleges });
 });
 
+export const listCollegeCanteens = asyncHandler(async (req: Request, res: Response) => {
+  const canteens = await container.adminService.listCollegeCanteens(req.params.id.toString());
+  res.status(200).json({ success: true, data: canteens });
+});
+
 export const createCollege = asyncHandler(async (req: Request, res: Response) => {
   const college = await container.adminService.createCollege(req.body);
   res.status(201).json({ success: true, data: college });

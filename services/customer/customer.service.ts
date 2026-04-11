@@ -84,7 +84,7 @@ export class CustomerService {
       orderItems: {
         create: orderItems.map((item) => ({
           tenantId: input.tenantId,
-          menuItem: { connect: { id: item.menuItemId } },
+          menuItemId: item.menuItemId,
           menuItemName: item.menuItemName,
           imageUrl: item.imageUrl,
           unitPriceInPaise: item.unitPriceInPaise,

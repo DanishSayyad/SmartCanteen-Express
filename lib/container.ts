@@ -21,6 +21,7 @@ import { AuthService } from '../services/auth/auth.service.js';
 import { AdminService } from '../services/admin/admin.service.js';
 import { CustomerService } from '../services/customer/customer.service.js';
 import { ManagerService } from '../services/manager/manager.service.js';
+import { env } from '../utils/env.js';
 
 const roleRepository = new RoleRepository(prisma);
 const collegeRepository = new CollegeRepository(prisma);

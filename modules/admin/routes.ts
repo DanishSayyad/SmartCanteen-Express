@@ -3,6 +3,7 @@ import {
   assignManager,
   createCollege,
   deleteCollege,
+  listCollegeCanteens,
   listColleges,
   listManagers,
   overviewAnalytics,
@@ -22,6 +23,7 @@ router.get('/colleges', listColleges);
 router.post('/colleges', validateRequest({ body: collegeSchema }), createCollege);
 router.put('/colleges/:id', validateRequest({ params: idParamSchema, body: updateCollegeSchema }), updateCollege);
 router.delete('/colleges/:id', validateRequest({ params: idParamSchema }), deleteCollege);
+router.get('/colleges/:id/canteens', validateRequest({ params: idParamSchema }), listCollegeCanteens);
 router.get('/colleges/:id/managers', validateRequest({ params: idParamSchema }), listManagers);
 router.post('/managers', validateRequest({ body: assignManagerSchema }), assignManager);
 router.get('/analytics/overview', overviewAnalytics);

@@ -2,6 +2,10 @@
 /generated/prisma
 /node_modules
 /dist
+/frontend/node_modules
+/frontend/dist
+/frontend/*.js
+/frontend/*.d.ts
 /.env
 /.env.local
 /.env.*.local

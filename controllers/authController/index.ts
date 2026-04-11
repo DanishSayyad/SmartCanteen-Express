@@ -2,6 +2,11 @@ import { Request, Response } from 'express';
 import { container } from '../../lib/container.js';
 import { asyncHandler } from '../../utils/async-handler.js';
 
+export const listRegistrationTenants = asyncHandler(async (_req: Request, res: Response) => {
+  const tenants = await container.authService.listRegistrationTenants();
+  res.status(200).json({ success: true, data: tenants });
+});
+
 export const registerCustomer = asyncHandler(async (req: Request, res: Response) => {
   const response = await container.authService.registerCustomer(req.body);
   res.status(201).json({ success: true, data: response });
