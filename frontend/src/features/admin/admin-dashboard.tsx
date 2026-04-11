@@ -479,18 +479,20 @@ export const AdminDashboard = () => {
                         <Button variant="secondary" onClick={() => openEditModal(college)}>
                           Edit college
                         </Button>
-                        <Button variant="ghost" onClick={() => copySignupLink(college)}>
-                          Copy signup link
-                        </Button>
                         {college.isActive ? (
-                          <Button
-                            variant="danger"
-                            onClick={() => {
-                              deactivateCollegeMutation.mutate(college.id);
-                            }}
-                          >
-                            Deactivate
-                          </Button>
+                          <>
+                            <Button variant="ghost" onClick={() => copySignupLink(college)}>
+                              Copy signup link
+                            </Button>
+                            <Button
+                              variant="danger"
+                              onClick={() => {
+                                deactivateCollegeMutation.mutate(college.id);
+                              }}
+                            >
+                              Deactivate
+                            </Button>
+                          </>
                         ) : null}
                       </div>
                     </article>
@@ -548,13 +550,20 @@ export const AdminDashboard = () => {
                         )}
                       </div>
                     </div>
-                    <div className="mt-6 rounded-[1.75rem] border border-[#ddcfb3] bg-white/75 p-5">
-                      <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#7b6f5b]">Shareable student signup link</p>
-                      <div className="mt-4 flex flex-wrap gap-3">
-                        <Input readOnly value={`${window.location.origin}/register?tenantId=${selectedCollege.id}`} />
-                        <Button onClick={() => copySignupLink(selectedCollege)}>Copy</Button>
+                    {selectedCollege.isActive ? (
+                      <div className="mt-6 rounded-[1.75rem] border border-[#ddcfb3] bg-white/75 p-5">
+                        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#7b6f5b]">Shareable student signup link</p>
+                        <div className="mt-4 flex flex-wrap gap-3">
+                          <Input readOnly value={`${window.location.origin}/register?tenantId=${selectedCollege.id}`} />
+                          <Button onClick={() => copySignupLink(selectedCollege)}>Copy</Button>
+                        </div>
                       </div>
-                    </div>
+                    ) : (
+                      <div className="mt-6 rounded-[1.75rem] border border-[#ddcfb3] bg-[#fef0e6] p-5">
+                        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#7b6f5b]">Signup limited</p>
+                        <p className="mt-2 text-sm text-[#5d584d]">This college is currently deactivated. Activate it to share signup links with students.</p>
+                      </div>
+                    )}
                   </>
                 )}
               </Panel>

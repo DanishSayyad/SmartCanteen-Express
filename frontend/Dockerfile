@@ -1,44 +1,23 @@
-# Stage 1: Build Phase
-FROM node:20-alpine AS build
+FROM node:20-alpine
 
-# Install pnpm
-RUN npm install -g pnpm
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+
+RUN corepack enable
 
 WORKDIR /app
 
-# Copy package.json
-COPY package.json ./
+# Copy monorepo files from root context
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
-# Install dependencies (without lockfile since frontend lockfile is in monorepo root)
-RUN pnpm install
+# Copy frontend package and source
+COPY frontend ./frontend
 
-# Copy source files
-COPY . .
+# Install dependencies using the monorepo workspace
+RUN pnpm install --frozen-lockfile --ignore-scripts
 
-# Define build arguments that map to Vite env variables
-ARG VITE_API_BASE_URL
-ARG VITE_RAZORPAY_KEY_ID
-ARG VITE_PAYMENT_MODE=fake
-ARG VITE_ENABLE_QA_TOOLS=true
+WORKDIR /app/frontend
 
-# Set them as ENV so vite utilizes them during build
-ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
-ENV VITE_RAZORPAY_KEY_ID=${VITE_RAZORPAY_KEY_ID}
-ENV VITE_PAYMENT_MODE=${VITE_PAYMENT_MODE}
-ENV VITE_ENABLE_QA_TOOLS=${VITE_ENABLE_QA_TOOLS}
+EXPOSE 5173
 
-# Build the application
-RUN pnpm run build
-
-# Stage 2: Serve Phase
-FROM nginx:alpine
-
-# Copy built assets
-COPY --from=build /app/dist /usr/share/nginx/html
-
-# Copy custom nginx configuration for SPA routing
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["pnpm", "dev", "--host", "0.0.0.0"]
