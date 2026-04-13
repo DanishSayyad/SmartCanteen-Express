@@ -21,7 +21,6 @@ const envSchema = z.object({
   CLOUDINARY_API_KEY: z.string().default('cloudinary-key'),
   CLOUDINARY_API_SECRET: z.string().default('cloudinary-secret'),
   CLOUDINARY_FOLDER: z.string().default('smart-canteen'),
-  REDIS_URL: z.string().optional(),
 });
 
 export const env = envSchema.parse(process.env);

@@ -14,7 +14,7 @@ This backend uses Express + TypeScript + Prisma with a Clean Architecture inspir
 - `utils/` contains cross-cutting helpers such as env parsing, JWT, hashing, crypto, and the strict order FSM.
 - `lib/container.ts` wires dependencies manually for simple dependency injection.
 
-The backend is stateless, tenant-aware, and horizontal-scaling ready. Redis is used through a cache abstraction for carts and QR/token cache hints, while the design keeps PostgreSQL as the source of truth.
+The backend is stateless, tenant-aware, and uses a local file-backed cache abstraction for carts and QR/token cache hints, while PostgreSQL remains the source of truth.
 
 ## Folder Structure
 
@@ -169,7 +169,6 @@ Audit logging captures:
    - `RAZORPAY_KEY_ID`
    - `RAZORPAY_KEY_SECRET`
    - `RAZORPAY_WEBHOOK_SECRET`
-   - `REDIS_URL` (optional but recommended)
    - `CLOUDINARY_CLOUD_NAME`
    - `CLOUDINARY_API_KEY`
    - `CLOUDINARY_API_SECRET`
@@ -196,10 +195,10 @@ Storage provider swap:
 - Implement `StorageProvider` from `interfaces/storage-provider.ts`.
 - Replace the adapter in `services/shared/storage.service.ts`.
 
-Redis/BullMQ growth path:
+Local cache growth path:
 
-- `services/shared/cache.service.ts` already abstracts Redis.
-- Add BullMQ workers for QR expiry, delayed-order checks, analytics rollups, or webhook retry handling without changing controller logic.
+- `services/shared/cache.service.ts` now abstracts a file-backed local cache.
+- If you later want distributed caching or job queues again, reintroduce a shared cache backend behind the same interface.
 
 Multi-canteen growth:
 
